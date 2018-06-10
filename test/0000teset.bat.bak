@@ -1,0 +1,28 @@
+set /p shareFilePath=请输入共享文件夹路径(默认D:\shareFile)：
+if "%shareFilePath%" == "" set shareFilePath=D:\shareFile
+explorer %shareFilePath%
+
+@echo off&title 清理空目录
+set/p Pan=请输入要清理盘符（只需输入字母即可），回车确认：
+cls&echo 即将开始清理。。。&ping 0 -n "3">nul
+cd /d %Pan%:\
+for /f "delims=" %%a in ('dir /ad/s/b') do (
+    dir /a-d/s/b "%%~a\*" >nul 2>nul
+    if errorlevel 1 (
+        title 正在清理空目录: “%%~a”，请等待。。。
+        echo 空文件夹: “%%~a”为空，准备删除。。。
+        rd /s/q "%%~a
+        if exist "%%~a" (
+            title 目录: “%%~a”被占用，无法删除。
+            echo 文件夹被占用，无法删除。
+            ping 0 -n "4">nul
+        ) else (
+            echo 空文件夹: “%%~a”已被清理。
+            ping 0 -n "1">nul
+        )
+    )
+)
+set msg=%Pan% 盘空文件夹清理完成。请按任意键退出。
+title %msg%&echo %msg%
+pause>nul
+exit
